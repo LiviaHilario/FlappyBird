@@ -15,6 +15,11 @@
 		817AD8F52343775200C36322 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 817AD8F32343775200C36322 /* Main.storyboard */; };
 		817AD8F72343775300C36322 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 817AD8F62343775300C36322 /* Assets.xcassets */; };
 		817AD8FA2343775300C36322 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 817AD8F82343775300C36322 /* LaunchScreen.storyboard */; };
+		817AD91C234382B500C36322 /* pipe2.png in Resources */ = {isa = PBXBuildFile; fileRef = 817AD918234382B500C36322 /* pipe2.png */; };
+		817AD91E234382B500C36322 /* pipe1.png in Resources */ = {isa = PBXBuildFile; fileRef = 817AD91A234382B500C36322 /* pipe1.png */; };
+		817AD91F234382B500C36322 /* flappy1br.png in Resources */ = {isa = PBXBuildFile; fileRef = 817AD91B234382B500C36322 /* flappy1br.png */; };
+		817AD9212343836800C36322 /* bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 817AD9202343836800C36322 /* bg.png */; };
+		817AD9232343BB3300C36322 /* flappy2br.png in Resources */ = {isa = PBXBuildFile; fileRef = 817AD9222343BB3300C36322 /* flappy2br.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +33,11 @@
 		817AD8F62343775300C36322 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		817AD8F92343775300C36322 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		817AD8FB2343775300C36322 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		817AD918234382B500C36322 /* pipe2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pipe2.png; sourceTree = "<group>"; };
+		817AD91A234382B500C36322 /* pipe1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pipe1.png; sourceTree = "<group>"; };
+		817AD91B234382B500C36322 /* flappy1br.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flappy1br.png; sourceTree = "<group>"; };
+		817AD9202343836800C36322 /* bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg.png; sourceTree = "<group>"; };
+		817AD9222343BB3300C36322 /* flappy2br.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flappy2br.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +71,7 @@
 			isa = PBXGroup;
 			children = (
 				817AD8E92343775200C36322 /* AppDelegate.swift */,
+				817AD9172343828700C36322 /* New Group */,
 				817AD8EB2343775200C36322 /* GameScene.sks */,
 				817AD8ED2343775200C36322 /* Actions.sks */,
 				817AD8EF2343775200C36322 /* GameScene.swift */,
@@ -71,6 +82,18 @@
 				817AD8FB2343775300C36322 /* Info.plist */,
 			);
 			path = "Meu Flappy Bird";
+			sourceTree = "<group>";
+		};
+		817AD9172343828700C36322 /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+				817AD91B234382B500C36322 /* flappy1br.png */,
+				817AD9222343BB3300C36322 /* flappy2br.png */,
+				817AD9202343836800C36322 /* bg.png */,
+				817AD91A234382B500C36322 /* pipe1.png */,
+				817AD918234382B500C36322 /* pipe2.png */,
+			);
+			path = "New Group";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -131,8 +154,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				817AD9212343836800C36322 /* bg.png in Resources */,
+				817AD91F234382B500C36322 /* flappy1br.png in Resources */,
 				817AD8F52343775200C36322 /* Main.storyboard in Resources */,
 				817AD8EC2343775200C36322 /* GameScene.sks in Resources */,
+				817AD9232343BB3300C36322 /* flappy2br.png in Resources */,
+				817AD91E234382B500C36322 /* pipe1.png in Resources */,
+				817AD91C234382B500C36322 /* pipe2.png in Resources */,
 				817AD8F72343775300C36322 /* Assets.xcassets in Resources */,
 				817AD8FA2343775300C36322 /* LaunchScreen.storyboard in Resources */,
 				817AD8EE2343775200C36322 /* Actions.sks in Resources */,
