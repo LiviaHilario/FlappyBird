@@ -11,177 +11,286 @@ import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
-    var passaro = SKSpriteNode ()
-    var imagemBG = SKSpriteNode()
-    var chao = SKNode()
-    var ceu = SKNode()
-    var gameOver = false
-//    var espacoEntrePipes = 4
     
+    //essentially just a sprite or character that we gonna animate and move around our screen
+    var bird = SKSpriteNode()
+    var bg = SKSpriteNode()
+    var pontuacao = SKLabelNode()
+    var score = 0
+    var fraseDeGameOver = SKLabelNode()
+    var timer = Timer()
+//    <<<<<<< HEAD
     
-    enum ColliderType: UInt32 {
-        case Passaro = 1
+//    =======
+
+    //MARK: - Definindo o colisor com enum
+    enum Colisor: UInt32{
+        
+        case Bird = 1
         case Objeto = 2
-        case EspacoEntrePipes = 4
+        case Espaco = 4
+        
     }
+    var gameOver = false
     
-    
-    @objc func fazendoPipes() {
-        // colocando os canos na tela
+    @objc func criarTubos () {
         
-        ///separando os cones
-        let movePipes = SKAction.move(by: CGVector(dx: -2 * self.frame.width, dy:0 ), duration: TimeInterval(self.frame.width / 100))
-        let removePipes = SKAction.removeFromParent()
-        let moveAndRemovePipes = SKAction.sequence([movePipes, removePipes])
+        //MARK: - Criando animacao do movimento dos tubos
+        let animacaoTubos = SKAction.move(by: CGVector(dx: -2 * self.frame.width, dy: 0), duration: TimeInterval(self.frame.width / 100))
         
-        let lacuna = passaro.size.height * 4
-        let movimentoEntre = arc4random() % UInt32(self.frame.height / 2)
-        let movimentoPipes = CGFloat(movimentoEntre) - self.frame.height / 4
+        let removerTubos = SKAction.removeFromParent()
         
-        // colocando primeiro cano
+        let movereremoverTubos = SKAction.sequence([animacaoTubos, removerTubos])
+        
+        
+        
+        //MARK: Criando o gap
+        let gapAltura = bird.size.height * 2
+        
+        //MARK: limite de altura dos tubos
+        let movimentosTubos = arc4random() % UInt32(self.frame.height) / 2
+        
+        let deslocamentoTubos = CGFloat(movimentosTubos) - self.frame.height / 4
+        
+        //MARK: - adicionando os tubos
         let pipeTexture = SKTexture(imageNamed: "pipe1.png")
-        let pipe1 = SKSpriteNode(texture: pipeTexture)
-        pipe1.position = CGPoint(x: self.frame.maxX, y: self.frame.midY + pipeTexture.size().height / 2 + lacuna / 2 + movimentoPipes)
-        pipe1.run(movePipes)
-        self.addChild(pipe1)
+        
+        let tubo1 = SKSpriteNode(texture: pipeTexture)
+        
+        tubo1.position = CGPoint(x: self.frame.midX + self.frame.width, y: self.frame.midY + pipeTexture.size().height / 2 + gapAltura + deslocamentoTubos)
+        
+        tubo1.run(animacaoTubos)
+        
+        tubo1.physicsBody = SKPhysicsBody(rectangleOf: pipeTexture.size())
+        tubo1.physicsBody!.isDynamic = false
+        
+        //determinando que tubo 1 é físico
+        tubo1.physicsBody!.contactTestBitMask = Colisor.Objeto.rawValue
+        tubo1.physicsBody!.categoryBitMask = Colisor.Objeto.rawValue
+        tubo1.physicsBody!.collisionBitMask = Colisor.Objeto.rawValue
+        
+        tubo1.zPosition = -1
+        
+        self.addChild(tubo1)
+        
+        let pipeTexture2 = SKTexture(imageNamed: "pipe2.png")
+        
+        let tubo2 = SKSpriteNode(texture: pipeTexture2)
+        
+        tubo2.position = CGPoint(x: self.frame.midX + self.frame.width, y: self.frame.midY - pipeTexture2.size().height / 2 - gapAltura + deslocamentoTubos)
+        
+        tubo2.run(animacaoTubos)
+        
+        tubo2.physicsBody = SKPhysicsBody(rectangleOf: pipeTexture.size())
+        tubo2.physicsBody!.isDynamic = false
         
         
-
-        // colocando o segundo cone
-        let pipe2Texture = SKTexture(imageNamed: "pipe2.png")
-        let pipe2 = SKSpriteNode(texture: pipe2Texture)
-        pipe2.position = CGPoint(x: self.frame.maxX, y: self.frame.midY - pipe2Texture.size().height / 2 - lacuna / 2 + movimentoPipes )
-        pipe2.run(movePipes)
-        self.addChild(pipe2)
+        //determinando que tubo 2 é físico
+        tubo2.physicsBody!.contactTestBitMask = Colisor.Objeto.rawValue
+        tubo2.physicsBody!.categoryBitMask = Colisor.Objeto.rawValue
+        tubo2.physicsBody!.collisionBitMask = Colisor.Objeto.rawValue
         
+        tubo2.zPosition = -1
         
-        //Quando o passaro encostar no cano 1 o jogo acaba
-        pipe1.physicsBody = SKPhysicsBody(rectangleOf:pipeTexture.size())
-        pipe1.physicsBody!.isDynamic = false
-        pipe1.physicsBody!.contactTestBitMask = ColliderType.Objeto.rawValue
-        pipe1.physicsBody!.categoryBitMask = ColliderType.Objeto.rawValue
-        pipe1.physicsBody!.collisionBitMask = ColliderType.Objeto.rawValue
+        self.addChild(tubo2)
         
+        let espacoEntreTubos = SKNode()
         
-        //Quando o passaro encostar no cano 2 o jogo acaba
-        pipe2.physicsBody = SKPhysicsBody(rectangleOf:pipe2Texture.size())
-        pipe2.physicsBody!.isDynamic = false
-        pipe2.physicsBody!.contactTestBitMask = ColliderType.Objeto.rawValue
-        pipe2.physicsBody!.categoryBitMask = ColliderType.Objeto.rawValue
-        pipe2.physicsBody!.collisionBitMask = ColliderType.Objeto.rawValue
+        espacoEntreTubos.position = CGPoint(x: self.frame.midX + self.frame.width, y: self.frame.midY + deslocamentoTubos)
         
-        // GameOver
-        let espacoEntrePipes = SKNode()
-        espacoEntrePipes.position = CGPoint(x: self.frame.midX + self.frame.width, y: self.frame.midY + lacuna)
-        espacoEntrePipes.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: pipeTexture.size().width, height: lacuna ))
-        espacoEntrePipes.physicsBody!.isDynamic = false
-        espacoEntrePipes.run(moveAndRemovePipes)
+        espacoEntreTubos.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: pipeTexture.size().width, height: gapAltura))
         
-        espacoEntrePipes.physicsBody!.contactTestBitMask = ColliderType.Passaro.rawValue
-        espacoEntrePipes.physicsBody!.categoryBitMask = ColliderType.EspacoEntrePipes.rawValue
-        espacoEntrePipes.physicsBody!.collisionBitMask = ColliderType.EspacoEntrePipes.rawValue
-
-        self.addChild(espacoEntrePipes)
+        espacoEntreTubos.physicsBody!.isDynamic = false
+        
+        espacoEntreTubos.run(movereremoverTubos)
+        
+        espacoEntreTubos.physicsBody!.contactTestBitMask = Colisor.Bird.rawValue
+        espacoEntreTubos.physicsBody!.categoryBitMask = Colisor.Espaco.rawValue
+        espacoEntreTubos.physicsBody!.collisionBitMask = Colisor.Espaco.rawValue
+        
+        self.addChild(espacoEntreTubos)
     }
     
-    func didBegin(_ contact: SKPhysicsContact){
-        if contact.bodyA.categoryBitMask == ColliderType.EspacoEntrePipes.rawValue || contact.bodyB.categoryBitMask == ColliderType.EspacoEntrePipes.rawValue {
+    func didBegin(_ contact: SKPhysicsContact) {
         
-        print("Add one to score")
-//        self.speed = 0
-//        gameOver = true
-        }
-        else {
+        if gameOver == false {
             
-            print("Bateu")
+            if contact.bodyA.categoryBitMask == Colisor.Espaco.rawValue || contact.bodyB.categoryBitMask == Colisor.Espaco.rawValue {
+                
+                score += 1
+                pontuacao.text = String(score)
+                
+            } else{
+                
+                
+                self.speed = 0
+                gameOver = true
+                
+                timer.invalidate()
+                
+                fraseDeGameOver.fontName = "Arial"
+                fraseDeGameOver.fontSize = 30
+                fraseDeGameOver.text = "FIM DE JOGO, Recomeçar?"
+                fraseDeGameOver.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
+                self.addChild(fraseDeGameOver)
+            }
         }
+        
     }
+    
     override func didMove(to view: SKView) {
+
         self.physicsWorld.contactDelegate = self
+        configuracoesDoJogo()
+    }
+    
+    
+    func configuracoesDoJogo() {
         
-//        configuracaoDoJogo()
-//    }
-//
-//    func configuracaoDoJogo() {
+        //Faz a repeticao dos tubos aparecendo na tela a cada 3 segundos
+        timer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(self.criarTubos), userInfo: nil, repeats: true)
         
-        //novos pipes
-        _ = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(self.fazendoPipes), userInfo: nil, repeats: true)
+        //MARK: - cria a textura do fundo
+        let bgTexture = SKTexture(imageNamed: "bg.png")
         
-        // Declarando as imagens do passaro
-        let passaroTexture = SKTexture(imageNamed: "flappy1br.png")
-        let passaroTexture2 = SKTexture(imageNamed: "flappy2br.png")
-        let acao = SKAction.animate(with: [passaroTexture, passaroTexture2], timePerFrame: 0.1)
-        let passaroVoando = SKAction.repeatForever(acao)
-        //MARK: -
-        passaro = SKSpriteNode (texture: passaroTexture)
-        passaro.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
-        passaro.run(passaroVoando)
+        //cria a animacao do fundo
+        let moveFundo = SKAction.move(by: CGVector(dx: -bgTexture.size().width, dy: 0), duration: 5)
         
+        let mudancaDaAnimacaoFundo = SKAction.move(by: CGVector(dx: bgTexture.size().width, dy: 0), duration: 0)
         
-        // Quando o passaro encostar em qualquer parte o jogo acaba
-        passaro.physicsBody = SKPhysicsBody(circleOfRadius: passaroTexture.size().height / 2)
-        passaro.physicsBody!.contactTestBitMask = ColliderType.Objeto.rawValue
-        passaro.physicsBody!.categoryBitMask = ColliderType.Passaro.rawValue
-        passaro.physicsBody!.collisionBitMask = ColliderType.Passaro.rawValue
+        let moveFundoForever = SKAction.repeatForever(SKAction.sequence([moveFundo, mudancaDaAnimacaoFundo]))
         
-        passaro.physicsBody!.isDynamic = false
-        
-        self.addChild(passaro)
-        
-        // Limitando o passaro na tela
-        chao.position = CGPoint(x: self.frame.midX, y: -self.frame.height / 2)
-        chao.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.width, height: 1))
-        chao.physicsBody!.isDynamic = false
-        
-        //Quando o passaro encostar no chao o jogo acaba
-        chao.physicsBody!.contactTestBitMask = ColliderType.Objeto.rawValue
-        chao.physicsBody!.categoryBitMask = ColliderType.Objeto.rawValue
-        chao.physicsBody!.collisionBitMask = ColliderType.Objeto.rawValue
-        self.addChild(chao)
-        
-        //Imagem back se mover
-        let imagemBGTexture = SKTexture(imageNamed: "bg.png")
-        
-        let movimentoImagemBG = SKAction.move(by: CGVector(dx: -imagemBGTexture.size().width, dy: 0), duration: 5)
-        let mudaImagemBG = SKAction.move(by: CGVector(dx: imagemBGTexture.size().width, dy: 0), duration: 0)
-        let movimetarImagemBGSempre = SKAction.repeatForever(SKAction.sequence([movimentoImagemBG, mudaImagemBG]))
-        
-        var i: CGFloat = 0
+        var i : CGFloat = 0
         
         while i < 3 {
-            //image background
-            imagemBG = SKSpriteNode(texture: imagemBGTexture)
-            imagemBG.position = CGPoint(x: imagemBGTexture.size().width * i, y: self.frame.midY)
-            imagemBG.size.height = self.frame.height
-            //pro passaro ficar em cima do background
-            imagemBG.zPosition = -1
-            imagemBG.run(movimetarImagemBGSempre)
-            self.addChild(imagemBG)
+            
+            bg = SKSpriteNode(texture: bgTexture)
+            //seta a posicao no meio da tela
+            bg.position = CGPoint(x: bgTexture.size().width * i, y: self.frame.midY)
+            
+            //arruma o tamanho
+            bg.size.height = self.frame.height
+            
+            //faz o fundo mover
+            bg.run(moveFundoForever)
+            
+            bg.zPosition = -2
+            
+            self.addChild(bg)
             
             i += 1
+            
         }
         
         
+        
+        //MARK: - cria a textura da imagem do passaro
+        let birdTexture = SKTexture(imageNamed: "flappy1br.png")
+        let birdTexture2 = SKTexture(imageNamed: "flappy2br.png")
+        
+        //cria animacao
+        let animation = SKAction.animate(with: [birdTexture, birdTexture2], timePerFrame: 0.3)
+        //faz o loop pra sempre
+        let fazFlappyBirdVoar = SKAction.repeatForever(animation)
+        
+        bird = SKSpriteNode(texture: birdTexture)
+        
+        //Define a posicao do passarinho no meio da tela
+        bird.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
+        
+        //funcao do passaro voar
+        bird.run(fazFlappyBirdVoar)
+        
+        
+        bird.physicsBody = SKPhysicsBody(circleOfRadius: birdTexture.size().height / 2)
+        
+        bird.physicsBody!.isDynamic = false
+        
+        
+        
+        //determinando que Bird é físico
+        bird.physicsBody!.contactTestBitMask = Colisor.Objeto.rawValue
+        bird.physicsBody!.categoryBitMask = Colisor.Bird.rawValue
+        bird.physicsBody!.collisionBitMask = Colisor.Bird.rawValue
+        
+        //Adiciona o passarinho na ViewController
+        self.addChild(bird)
+        
+        //MARK: - limitador do chao
+        let chao = SKNode()
+        
+        chao.position = CGPoint(x: self.frame.midX, y: -self.frame.height / 2)
+        
+        chao.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.width, height: 1))
+        
+        chao.physicsBody!.isDynamic = false
+        
+        //determinando que chao é físico
+        chao.physicsBody!.contactTestBitMask = Colisor.Objeto.rawValue
+        chao.physicsBody!.categoryBitMask = Colisor.Objeto.rawValue
+        chao.physicsBody!.collisionBitMask = Colisor.Objeto.rawValue
+        
+        self.addChild(chao)
+        
+        
+        
+        //MARK: - limitador do ceu
+        let ceu = SKNode()
+        
+        ceu.position = CGPoint(x: self.frame.midX, y: self.frame.height / 2)
+        
+        ceu.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.width, height: 1))
+        
+        ceu.physicsBody!.isDynamic = false
+        
+        self.addChild(ceu)
+        
+        
+        //MARK: Mostrar pontuacao
+        pontuacao.fontName = "Arial"
+        pontuacao.fontSize = 60
+        pontuacao.text = "0"
+        pontuacao.position = CGPoint(x: self.frame.midX, y: self.frame.height / 2 - 100)
 
-    
+        self.addChild(pontuacao)
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        //MARK: - aplicando a fisica - gravidade
         
-        if gameOver == false {
         
-        passaro.physicsBody!.isDynamic = true
-        passaro.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 0))
-        passaro.physicsBody!.velocity = CGVector(dx: 0, dy: 0)
-        passaro.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 75))
-         print("Pulando")
+        
+        if gameOver == false{
+            //let birdTexture = SKTexture(imageNamed: "flappy1verde.png")
+            //
+            //bird.physicsBody = SKPhysicsBody(circleOfRadius: birdTexture.size().height / 2)
+            
+            bird.physicsBody!.isDynamic = true
+            
+            bird.physicsBody?.velocity = (CGVector(dx: 0, dy: 0))
+            
+            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 65))
+        } else {
+            
+            gameOver = false
+            
+            score = 0
+            
+            self.speed = 1
+            self.removeAllChildren()
+            
+            configuracoesDoJogo()
+            
+            
         }
+        
+        
+        
     }
     
     
     override func update(_ currentTime: TimeInterval) {
-        // Called before each frame is rendered
-        
         
     }
 }
